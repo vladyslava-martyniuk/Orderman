@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}OrderMan{% endblock %}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: orangered;
+            margin: 0;
+            padding: 0;
+            
+        }
+  table {
+    width: 100%;
+    border-collapse: collapse; /* Зливає межі в одну */
+    margin-top: 20px;
+    font-family: Arial, sans-serif;
+}
+
+thead {
+    background-color: #f8b500; /* Помаранчевий фон заголовку */
+    color: white;
+}
+
+th, td {
+    padding: 12px 15px;
+    border: 1px solid #ddd;
+    text-align: left;
+}
+
+tbody tr:nth-child(even) {
+    background-color: #f9f9f9; /* світло-сірий фон для парних рядків */
+}
+
+tbody tr:hover {
+    background-color: #ffeaa7; /* підсвітка рядка при наведенні */
+    cursor: pointer;
+}
+
+th {
+    font-weight: bold;
+}
+</style>
+
+</head>
+<body>
+    {% include '_nav.html' %}
+    
+    {% block content %}{% endblock %}
+</body>
+</html>

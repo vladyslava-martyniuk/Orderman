@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Меню піцерії</h1>
+
+    <p>
+        Сортувати за ціною:
+        {% if sort_order == 'asc' %}
+            <a href="{{ url_for('menu', sort='desc') }}">🔽 спадання</a>
+        {% else %}
+            <a href="{{ url_for('menu', sort='asc') }}">🔼 зростання</a>
+        {% endif %}
+    </p>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Назва піци</th>
+                <th>Опис</th>
+                <th>Ціна (грн)</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in menu %}
+            <tr>
+                <td>{{ item.title }}</td>
+                <td>{{ item.description }}</td>
+                <td>{{ item.price }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
