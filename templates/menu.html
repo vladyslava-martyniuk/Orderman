@@ -3,31 +3,53 @@
 {% block content %}
     <h1>Меню піцерії</h1>
 
-    <p>
-        Сортувати за ціною:
-        {% if sort_order == 'asc' %}
-            <a href="{{ url_for('menu', sort='desc') }}">🔽 спадання</a>
-        {% else %}
-            <a href="{{ url_for('menu', sort='asc') }}">🔼 зростання</a>
-        {% endif %}
-    </p>
+    <!-- Форма фільтрації -->
+    <form method="get" action="{{ url_for('menu') }}">
+        <label for="category">Фільтр за категорією:</label>
+        <select name="category" id="category" onchange="this.form.submit()">
+            <option value="all" {% if selected_category == 'all' %}selected{% endif %}>Усі категорії</option>
+            {% for cat in categories %}
+                <option value="{{ cat.category }}" {% if selected_category == cat.category %}selected{% endif %}>
+                    {{ cat.category }}
+                </option>
+            {% endfor %}
+        </select>
 
+        <label for="sort">Сортувати за ціною:</label>
+        <select name="sort" id="sort" onchange="this.form.submit()">
+            <option value="asc" {% if sort_order == 'asc' %}selected{% endif %}>🔼 зростання</option>
+            <option value="desc" {% if sort_order == 'desc' %}selected{% endif %}>🔽 спадання</option>
+        </select>
+    </form>
+
+    <hr>
+
+    <!-- Таблиця страв -->
     <table>
         <thead>
             <tr>
-                <th>Назва піци</th>
+                <th>Назва</th>
                 <th>Опис</th>
                 <th>Ціна (грн)</th>
+                <th>Об'єм / Кількість</th>
+                <th>Категорія</th>
             </tr>
         </thead>
         <tbody>
             {% for item in menu %}
-            <tr>
-                <td>{{ item.title }}</td>
-                <td>{{ item.description }}</td>
-                <td>{{ item.price }}</td>
-            </tr>
+                <tr>
+                    <td>{{ item.title }}</td>
+                    <td>{{ item.description }}</td>
+                    <td>{{ item.price }}</td>
+                    <td>{{ item.quantity }}</td>
+                    <td>{{ item.category }}</td>
+                </tr>
             {% endfor %}
         </tbody>
     </table>
+
+    {% if menu|length == 0 %}
+        <p>У цій категорії наразі немає страв.</p>
+    {% endif %}
 {% endblock %}
+
