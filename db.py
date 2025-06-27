@@ -23,7 +23,6 @@ def init_db():
         )
     ''')
 
-    # Перевірити і додати колонки, якщо вони відсутні
     cursor.execute("PRAGMA table_info(dishes)")
     columns = [info[1] for info in cursor.fetchall()]
 

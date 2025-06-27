@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h1>Меню піцерії</h1>
+<h1>Меню піцерії</h1>
 
     <!-- Форма фільтрації -->
     <form method="get" action="{{ url_for('menu') }}">
@@ -24,32 +24,40 @@
 
     <hr>
 
-    <!-- Таблиця страв -->
-    <table>
-        <thead>
-            <tr>
-                <th>Назва</th>
-                <th>Опис</th>
-                <th>Ціна (грн)</th>
-                <th>Об'єм / Кількість</th>
-                <th>Категорія</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for item in menu %}
-                <tr>
-                    <td>{{ item.title }}</td>
-                    <td>{{ item.description }}</td>
-                    <td>{{ item.price }}</td>
-                    <td>{{ item.quantity }}</td>
-                    <td>{{ item.category }}</td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-
-    {% if menu|length == 0 %}
-        <p>У цій категорії наразі немає страв.</p>
-    {% endif %}
+{% if menu %}
+<table>
+    <thead>
+        <tr>
+            <th>Назва та автор</th>
+            <th>Опис</th>
+            <th>Ціна (грн)</th>
+            <th>Кількість</th>
+            <th>Категорія</th>
+            <th>Дії(! Це колонка тільки для адміністратора)</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in menu %}
+        <tr>
+            <td>{{ item.title }}</td>
+            <td>{{ item.description }}</td>
+            <td>{{ item.price }}</td>
+            <td>{{ item.quantity }}</td>
+            <td>{{ item.category }}</td>
+            <td>
+                <a href="{{ url_for('edit', dish_id=item.id) }}">Редагувати</a>
+                <form action="{{ url_for('delete', dish_id=item.id) }}" method="post" style="display:inline;">
+                    <button type="submit" onclick="return confirm('Ви впевнені, що хочете видалити цю книгу?');">
+                        Видалити
+                    </button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+    <p>Нічого не знайдено.</p>
+{% endif %}
 {% endblock %}
 

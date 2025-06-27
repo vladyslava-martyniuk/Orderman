@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect
+from flask import Flask, render_template, request, redirect, url_for
 import sqlite3
 
 app = Flask(__name__)
@@ -15,52 +15,100 @@ def home():
 @app.route("/menu")
 def menu():
     sort_order = request.args.get("sort", "asc")
-    selected_category = request.args.get("category", "all")
-
     conn = get_db_connection()
-
-    categories = conn.execute("SELECT DISTINCT category FROM dishes").fetchall()
-
-
-    if selected_category == "all":
-        dishes = conn.execute(f"""
-            SELECT * FROM dishes
-            ORDER BY category ASC, price {'DESC' if sort_order == 'desc' else 'ASC'}
-        """).fetchall()
-    else:
-        dishes = conn.execute(f"""
-            SELECT * FROM dishes
-            WHERE category = ?
-            ORDER BY price {'DESC' if sort_order == 'desc' else 'ASC'}
-        """, (selected_category,)).fetchall()
-
+    order_by = "DESC" if sort_order == "desc" else "ASC"
+    dishes = conn.execute(f"SELECT * FROM dishes ORDER BY price {order_by}").fetchall()
     conn.close()
-
-    return render_template("menu.html", menu=dishes,
-                           sort_order=sort_order,
-                           categories=categories,
-                           selected_category=selected_category)
+    return render_template("menu.html", menu=dishes, sort_order=sort_order, search=None)
 
 @app.route("/admin", methods=["GET", "POST"])
 def admin():
     if request.method == "POST":
-        title = request.form["title"]
-        description = request.form["description"]
-        price = request.form["price"]
-        quantity = request.form["quantity"]
-        category = request.form["category"]
+        title = request.form.get("title", "").strip()
+        description = request.form.get("description", "").strip()
+        price = request.form.get("price", "").strip()
+        quantity = request.form.get("quantity", "").strip()
+        category = request.form.get("category", "").strip()
+
+        if not title or not price or not category:
+            return "Назва, ціна та категорія обов'язкові.", 400
+
+        try:
+            price_val = float(price)
+        except ValueError:
+            return "Ціна має бути числом.", 400
 
         conn = get_db_connection()
         conn.execute("""
             INSERT INTO dishes (title, description, price, quantity, category)
             VALUES (?, ?, ?, ?, ?)
-        """, (title, description, price, quantity, category))
-
+        """, (title, description, price_val, quantity, category))
         conn.commit()
         conn.close()
-        return redirect("/menu")
+        return redirect(url_for('menu'))
 
-    return render_template("admin_form.html")
+    return render_template("admin_form.html", book=None, mode="add")
+
+@app.route("/edit/<int:dish_id>", methods=["GET", "POST"])
+def edit(dish_id):
+    conn = get_db_connection()
+    dish = conn.execute("SELECT * FROM dishes WHERE id = ?", (dish_id,)).fetchone()
+    if dish is None:
+        conn.close()
+        return "Страва не знайдена", 404
+
+    if request.method == "POST":
+        title = request.form.get("title", "").strip()
+        description = request.form.get("description", "").strip()
+        price = request.form.get("price", "").strip()
+        quantity = request.form.get("quantity", "").strip()
+        category = request.form.get("category", "").strip()
+
+        if not title or not price or not category:
+            return "Назва, ціна та категорія обов'язкові.", 400
+
+        try:
+            price_val = float(price)
+        except ValueError:
+            return "Ціна має бути числом.", 400
+
+        conn.execute("""
+            UPDATE dishes SET title = ?, description = ?, price = ?, quantity = ?, category = ?
+            WHERE id = ?
+        """, (title, description, price_val, quantity, category, dish_id))
+        conn.commit()
+        conn.close()
+        return redirect(url_for('menu'))
+
+    conn.close()
+    return render_template("admin_form.html", book=dish, mode="edit")
+
+@app.route("/delete/<int:dish_id>", methods=["POST"])
+def delete(dish_id):
+    conn = get_db_connection()
+    conn.execute("DELETE FROM dishes WHERE id = ?", (dish_id,))
+    conn.commit()
+    conn.close()
+    return redirect(url_for('menu'))
+
+@app.route("/search")
+def search():
+    search_query = request.args.get("q", "").strip().lower()
+    conn = get_db_connection()
+    dishes = conn.execute("SELECT * FROM dishes").fetchall()
+    conn.close()
+    filtered = [dish for dish in dishes if search_query in dish["title"].lower()]
+
+    print(f"Знайдено записів: {len(filtered)}")
+    return render_template("menu.html", menu=filtered, search=search_query)
+
+@app.route("/clear-menu", methods=["POST"])
+def clear_menu():
+    conn = get_db_connection()
+    conn.execute("DELETE FROM dishes")
+    conn.commit()
+    conn.close()
+    return redirect(url_for('menu'))
 
 if __name__ == "__main__":
     app.run(debug=True)

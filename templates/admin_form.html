@@ -1,9 +1,28 @@
 {% extends "base.html" %}
-
-{% block title %}Додати страву — OrderMan{% endblock %}
+{% block title %}
+  {% if mode == 'add' %}
+    Додати книгу
+  {% elif mode == 'edit' %}
+    Редагувати книгу
+  {% elif mode == 'view' %}
+    Перегляд книги
+  {% elif mode == 'delete' %}
+    Видалити книгу
+  {% endif %}
+{% endblock %}
 
 {% block content %}
-<h2>Додати страву до меню</h2>
+<h2>
+  {% if mode == 'add' %}
+    Додати книгу
+  {% elif mode == 'edit' %}
+    Редагувати книгу
+  {% elif mode == 'view' %}
+    Перегляд книги
+  {% elif mode == 'delete' %}
+    Видалити книгу
+  {% endif %}
+</h2>
 <form method="post">
   <label>Назва:</label><br>
   <input type="text" name="title" required><br><br>
@@ -28,7 +47,13 @@
     <option value="Десерти">Десерти</option>
   </select><br><br>
 
-  <button type="submit">Додати</button>
+  {% if mode == 'add' %}
+    <button type="submit">Додати</button>
+  {% elif mode == 'edit' %}
+    <button type="submit" name="mode" value="edit">Оновити</button>
+  {% elif mode == 'delete' %}
+    <button type="submit" name="mode" value="delete" onclick="return confirm('Ви дійсно хочете видалити книгу?');">Видалити</button>
+  {% endif %}
  
 
 </form>
