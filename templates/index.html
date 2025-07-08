@@ -1,21 +1,37 @@
 {% extends "base.html" %}
 
+{% block content %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="uk">
 <head>
     <meta charset="UTF-8">
-    <title></title>
+    <title>OrderMan</title>
+    <style>
+        #weather {
+            margin-top: 20px;
+            font-weight: bold;
+            font-size: 1.2em;
+            color: #444;
+            background: #f2f2f2;
+            padding: 10px;
+            border-radius: 8px;
+            max-width: 400px;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+            margin-top: 15px;
+            border-radius: 12px;
+        }
+    </style>
 </head>
 <body>
-{% block content %}
-    <h1>OrderMan - онлайн веб-сайт піцерії
-    </h1>
+    <h1>OrderMan — онлайн вебсайт піцерії 🍕</h1>
     <img src="https://images.stockcake.com/public/b/9/1/b91d731a-5e0c-4080-972f-469e04a73b13_large/cheesy-pizza-slice-stockcake.jpg" alt="Піца">
-{% endblock %}
+ 
 </body>
 </html>
-
-
+{% endblock %}
 
 
 
