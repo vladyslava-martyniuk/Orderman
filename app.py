@@ -6,9 +6,9 @@ from datetime import datetime
 app = Flask(__name__)
 
 # === Налаштування погоди ===
-API_KEY = "тут_твій_API_ключ"  # ← заміни своїм ключем
-LAT = 60.1695  # Гельсінкі
-LON = 24.9354
+API_KEY  = "8e92e4ce26e06d4f3c425901fbf9847b" 
+LAT = 60.2055
+LON = 24.6559
 
 # === БД ===
 def get_db_connection():
